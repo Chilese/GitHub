@@ -1,7 +1,18 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 import sqlite3
 import os
+
+def obter_nomes_fornecedores():
+    conn = sqlite3.connect('estoque.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT nome_fantasia FROM fornecedor''')
+    fornecedores = cursor.fetchall()
+    conn.close()
+    return [fornecedor[0] for fornecedor in fornecedores]
+
+
 
 # Função para inserir um novo produto no estoque
 def inserir_produto():
@@ -12,11 +23,24 @@ def inserir_produto():
     preco_venda = float(entry_preco_venda.get())
     quantidade = int(entry_quantidade.get())
     data_entrada = entry_data_entrada.get()
-    fornecedor_id = int(entry_fornecedor_id.get())  # Supondo que o fornecedor_id seja um campo com valores inteiros
+    fornecedor = combo_fornecedor.get()  # Obtém o fornecedor selecionado
     notas = entry_notas.get()
 
-    # Conecta ao banco de dados e insere os dados na tabela "estoque"
+    # Conecta ao banco de dados e busca o fornecedor_id pelo nome do fornecedor
     db_path = os.path.abspath("estoque.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('''SELECT fornecedor_id FROM fornecedor WHERE nome_fantasia=?''', (fornecedor,))
+    result = cursor.fetchone()
+    conn.close()
+
+    if result:
+        fornecedor_id = result[0]
+    else:
+        # Fornecedor não encontrado, trate isso de acordo com suas necessidades
+        fornecedor_id = None
+
+    # Conecta ao banco de dados e insere os dados na tabela "estoque"
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute('''INSERT INTO estoque (nome, descricao, categoria_id, preco_compra, preco_venda, quantidade, data_entrada, fornecedor_id, notas)
@@ -26,7 +50,7 @@ def inserir_produto():
 
     messagebox.showinfo('Sucesso', 'Produto inserido com sucesso!')
 
-# Função para editar um produto pelo nome
+
 def editar_produto():
     nome_produto = entry_nome.get()
 
@@ -65,10 +89,11 @@ def editar_produto():
     entry_data_entrada.insert(0, produto[7])
 
     entry_fornecedor_id.delete(0, tk.END)
-    entry_fornecedor_id.insert(0, produto[8])
+    entry_fornecedor_id.insert(0, produto[8])  # Preenche o fornecedor_id do produto
 
     entry_notas.delete(0, tk.END)
     entry_notas.insert(0, produto[9])
+
 
 # Função para excluir um produto pelo nome
 def excluir_produto():
@@ -135,15 +160,19 @@ label_data_entrada.grid(row=6, column=0)
 entry_data_entrada = tk.Entry(root)
 entry_data_entrada.grid(row=6, column=1)
 
+
+# Adiciona uma Label para mostrar o fornecedor_id do produto selecionado
 label_fornecedor_id = tk.Label(root, text='Fornecedor ID:')
-label_fornecedor_id.grid(row=7, column=0)
+label_fornecedor_id.grid(row=7, column=2)
 entry_fornecedor_id = tk.Entry(root)
-entry_fornecedor_id.grid(row=7, column=1)
+entry_fornecedor_id.grid(row=7, column=3)
 
 label_notas = tk.Label(root, text='Notas:')
 label_notas.grid(row=8, column=0)
 entry_notas = tk.Entry(root)
 entry_notas.grid(row=8, column=1)
+
+
 
 # Botões para executar as operações
 btn_inserir = tk.Button(root, text='Inserir', command=inserir_produto)
