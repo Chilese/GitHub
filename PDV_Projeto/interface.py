@@ -12,13 +12,71 @@ def obter_nomes_fornecedores():
     conn.close()
     return [fornecedor[0] for fornecedor in fornecedores]
 
+def obter_nomes_categorias():
+    # Função para obter os nomes das categorias do banco de dados
+    conn = sqlite3.connect('estoque.db')
+    cursor = conn.cursor()
+    cursor.execute('''SELECT categoria FROM categoria''')
+    categorias = cursor.fetchall()
+    conn.close()
+    return [categoria[0] for categoria in categorias]
+
+# Cria a janela da interface
+root = tk.Tk()
+root.title('Cadastro de Produtos')
+
+# Cria os campos de entrada e rótulos para cada campo da tabela
+label_nome = tk.Label(root, text='Nome:')
+label_nome.grid(row=0, column=0)
+entry_nome = tk.Entry(root)
+entry_nome.grid(row=0, column=1)
+
+label_descricao = tk.Label(root, text='Descrição:')
+label_descricao.grid(row=1, column=0)
+entry_descricao = tk.Entry(root)
+entry_descricao.grid(row=1, column=1)
+
+label_categoria_id = tk.Label(root, text='Categoria:')
+label_categoria_id.grid(row=2, column=0)
+combo_categoria_id = ttk.Combobox(root, values=obter_nomes_categorias())  # Configuração do combobox
+combo_categoria_id.grid(row=2, column=1)
+
+label_preco_compra = tk.Label(root, text='Preço de Compra:')
+label_preco_compra.grid(row=3, column=0)
+entry_preco_compra = tk.Entry(root)
+entry_preco_compra.grid(row=3, column=1)
+
+label_preco_venda = tk.Label(root, text='Preço de Venda:')
+label_preco_venda.grid(row=4, column=0)
+entry_preco_venda = tk.Entry(root)
+entry_preco_venda.grid(row=4, column=1)
+
+label_quantidade = tk.Label(root, text='Quantidade:')
+label_quantidade.grid(row=5, column=0)
+entry_quantidade = tk.Entry(root)
+entry_quantidade.grid(row=5, column=1)
+
+label_data_entrada = tk.Label(root, text='Data de Entrada:')
+label_data_entrada.grid(row=6, column=0)
+entry_data_entrada = tk.Entry(root)
+entry_data_entrada.grid(row=6, column=1)
+
+label_fornecedor = tk.Label(root, text='Fornecedor:')
+label_fornecedor.grid(row=7, column=0)
+combo_fornecedor = ttk.Combobox(root, values=obter_nomes_fornecedores())  # Configuração da combobox
+combo_fornecedor.grid(row=7, column=1)
+
+label_notas = tk.Label(root, text='Notas:')
+label_notas.grid(row=8, column=0)
+entry_notas = tk.Entry(root)
+entry_notas.grid(row=8, column=1)
 
 
 # Função para inserir um novo produto no estoque
 def inserir_produto():
     nome = entry_nome.get()
     descricao = entry_descricao.get()
-    categoria_id = int(entry_categoria_id.get())  # Supondo que a categoria_id seja um campo com valores inteiros
+    categoria_id = combo_categoria_id.get()
     preco_compra = float(entry_preco_compra.get())
     preco_venda = float(entry_preco_venda.get())
     quantidade = int(entry_quantidade.get())
@@ -73,8 +131,8 @@ def editar_produto():
     entry_descricao.delete(0, tk.END)
     entry_descricao.insert(0, produto[2])
 
-    entry_categoria_id.delete(0, tk.END)
-    entry_categoria_id.insert(0, produto[3])
+    combo_categoria = ttk.Combobox(root, values=obter_nomes_categorias())
+    combo_categoria.set(produto[3])
 
     entry_preco_compra.delete(0, tk.END)
     entry_preco_compra.insert(0, produto[4])
@@ -87,9 +145,6 @@ def editar_produto():
 
     entry_data_entrada.delete(0, tk.END)
     entry_data_entrada.insert(0, produto[7])
-
-    entry_fornecedor_id.delete(0, tk.END)
-    entry_fornecedor_id.insert(0, produto[8])  # Preenche o fornecedor_id do produto
 
     entry_notas.delete(0, tk.END)
     entry_notas.insert(0, produto[9])
@@ -112,17 +167,11 @@ def excluir_produto():
     # Limpa os campos de entrada após a exclusão
     entry_nome.delete(0, tk.END)
     entry_descricao.delete(0, tk.END)
-    entry_categoria_id.delete(0, tk.END)
     entry_preco_compra.delete(0, tk.END)
     entry_preco_venda.delete(0, tk.END)
     entry_quantidade.delete(0, tk.END)
     entry_data_entrada.delete(0, tk.END)
-    entry_fornecedor_id.delete(0, tk.END)
     entry_notas.delete(0, tk.END)
-
-# Cria a janela da interface
-root = tk.Tk()
-root.title('Cadastro de Produtos')
 
 # Cria os campos de entrada e rótulos para cada campo da tabela
 label_nome = tk.Label(root, text='Nome:')
@@ -134,11 +183,6 @@ label_descricao = tk.Label(root, text='Descrição:')
 label_descricao.grid(row=1, column=0)
 entry_descricao = tk.Entry(root)
 entry_descricao.grid(row=1, column=1)
-
-label_categoria_id = tk.Label(root, text='Categoria ID:')
-label_categoria_id.grid(row=2, column=0)
-entry_categoria_id = tk.Entry(root)
-entry_categoria_id.grid(row=2, column=1)
 
 label_preco_compra = tk.Label(root, text='Preço de Compra:')
 label_preco_compra.grid(row=3, column=0)
@@ -159,13 +203,6 @@ label_data_entrada = tk.Label(root, text='Data de Entrada:')
 label_data_entrada.grid(row=6, column=0)
 entry_data_entrada = tk.Entry(root)
 entry_data_entrada.grid(row=6, column=1)
-
-
-# Adiciona uma Label para mostrar o fornecedor_id do produto selecionado
-label_fornecedor_id = tk.Label(root, text='Fornecedor ID:')
-label_fornecedor_id.grid(row=7, column=2)
-entry_fornecedor_id = tk.Entry(root)
-entry_fornecedor_id.grid(row=7, column=3)
 
 label_notas = tk.Label(root, text='Notas:')
 label_notas.grid(row=8, column=0)
