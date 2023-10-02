@@ -3,6 +3,9 @@ from tkinter import ttk
 from tkinter import messagebox
 import sqlite3
 
+combo_categoria_id = None
+combo_fornecedor = None
+
 # Variável global para armazenar a árvore (Treeview)
 tree = None
 
@@ -36,10 +39,6 @@ def buscar_produtos():
 def abrir_interface_cadastro():
     import interface
 
-combo_categoria_id = None
-combo_fornecedor = None
-
-# Função para abrir a janela de edição do produto
 # Função para abrir a janela de edição do produto
 def editar_produto(event):
     # Obtenha o item selecionado na árvore
@@ -51,6 +50,8 @@ def editar_produto(event):
     def salvar_edicoes():
         print("Função salvar_edicoes chamada")  # Adicione esta linha
         item_id = tree.selection()[0]  # Obtenha o item selecionado na árvore
+        produto_id = tree.item(item_id, 'values')[0]  # Obtenha o ID do produto
+
 
         novo_nome = entry_nome.get()
         nova_descricao = entry_descricao.get()
@@ -62,18 +63,31 @@ def editar_produto(event):
         novo_fornecedor = combo_fornecedor.get()
         novas_notas = entry_notas.get()
 
+
         # Atualize os detalhes do produto no banco de dados com base no item_id
         conn = sqlite3.connect('estoque.db')
         cursor = conn.cursor()
+
+        print("Valores dos Campos de Entrada:")
+        print("Nome:", novo_nome)
+        print("Descrição:", nova_descricao)
+        print("Categoria:", nova_categoria)
+        print("Preço de Compra:", novo_preco_compra)    
+        print("Preço de Venda:", novo_preco_venda)
+        print("Quantidade:", nova_quantidade)
+        print("Data de Entrada:", nova_data_entrada)
+        print("Fornecedor:", novo_fornecedor)
+        print("Notas:", novas_notas)
+
         try:
-            cursor.execute('''UPDATE estoque SET nome = ?, descricao = ?, categoria_id = ?, preco_compra = ?, preco_venda = ?, quantidade = ?, data_entrada = ?, fornecedor_id = ?, notas = ? WHERE id = ?''', (novo_nome, nova_descricao, nova_categoria, novo_preco_compra, novo_preco_venda, nova_quantidade, nova_data_entrada, novo_fornecedor, novas_notas, item_id))
+            cursor.execute('''UPDATE estoque SET nome = ?, descricao = ?, categoria_id = ?, preco_compra = ?, preco_venda = ?, quantidade = ?, data_entrada = ?, fornecedor_id = ?, notas = ? WHERE id = ?''', (novo_nome, nova_descricao, nova_categoria, novo_preco_compra, novo_preco_venda, nova_quantidade, nova_data_entrada, novo_fornecedor, novas_notas, produto_id))
             conn.commit()
             conn.close()
             print("Atualização bem-sucedida")
 
             # Atualize a exibição na árvore (Treeview)
-            tree.item(item_id, values=(item_id, novo_nome, nova_descricao, nova_categoria, novo_preco_compra, novo_preco_venda, nova_quantidade, nova_data_entrada, novo_fornecedor, novas_notas))
-
+            tree.item(item_id, values=(valores[0], novo_nome, nova_descricao, nova_categoria, novo_preco_compra, novo_preco_venda, nova_quantidade, nova_data_entrada, novo_fornecedor, novas_notas))
+            
             # Feche a janela de edição após salvar
             popup.destroy()
         except sqlite3.Error as e:
@@ -82,12 +96,12 @@ def editar_produto(event):
             messagebox.showerror('Erro', f'Erro ao atualizar o produto: {e}')
             print(f"Erro ao atualizar o produto: {e}")
 
-
+    
     # Crie uma janela pop-up para edição
     popup = tk.Toplevel(root)
     popup.title('Editar Produto')
 
-    # Adicione campos de entrada para a edição dos detalhes do produto
+  
     # Preencha esses campos com os valores atuais
 
     # Nome
