@@ -9,10 +9,6 @@ def obter_nomes_fornecedores():
     pass
 
 def obter_nomes_categorias():
-<<<<<<< HEAD
-    # Código para obter nomes de categorias do banco de dados
-    pass
-=======
     # Função para obter os nomes das categorias do banco de dados
     conn = sqlite3.connect('estoque.db')
     cursor = conn.cursor()
@@ -172,7 +168,7 @@ def excluir_produto():
     entry_quantidade.delete(0, tk.END)
     entry_data_entrada.delete(0, tk.END)
     entry_notas.delete(0, tk.END)
->>>>>>> 7fdbd8ee8adb00d188cbf1939d9af063129a5d61
+
 
 # Cria os campos de entrada e rótulos para cada campo da tabela
 label_nome = tk.Label(root, text='Nome:')
@@ -185,14 +181,6 @@ label_descricao.grid(row=1, column=0)
 entry_descricao = tk.Entry(root)
 entry_descricao.grid(row=1, column=1)
 
-<<<<<<< HEAD
-label_categoria_id = tk.Label(root, text='Categoria:')
-label_categoria_id.grid(row=2, column=0)
-combo_categoria_id = ttk.Combobox(root, values=obter_nomes_categorias(), width=20)  # Defina a largura aqui
-combo_categoria_id.grid(row=2, column=1)
-
-=======
->>>>>>> 7fdbd8ee8adb00d188cbf1939d9af063129a5d61
 label_preco_compra = tk.Label(root, text='Preço de Compra:')
 label_preco_compra.grid(row=3, column=0)
 entry_preco_compra = tk.Entry(root)
@@ -213,14 +201,6 @@ label_data_entrada.grid(row=6, column=0)
 entry_data_entrada = tk.Entry(root)
 entry_data_entrada.grid(row=6, column=1)
 
-<<<<<<< HEAD
-label_fornecedor = tk.Label(root, text='Fornecedor:')
-label_fornecedor.grid(row=7, column=0)
-combo_fornecedor = ttk.Combobox(root, values=obter_nomes_fornecedores(), width=20)  # Defina a largura aqui
-combo_fornecedor.grid(row=7, column=1)
-
-=======
->>>>>>> 7fdbd8ee8adb00d188cbf1939d9af063129a5d61
 label_notas = tk.Label(root, text='Notas:')
 label_notas.grid(row=8, column=0)
 entry_notas = tk.Entry(root)
