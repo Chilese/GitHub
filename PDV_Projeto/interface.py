@@ -5,8 +5,14 @@ import sqlite3
 import os
 
 def obter_nomes_fornecedores():
-    # Código para obter nomes de fornecedores do banco de dados
-    pass
+    db_path = os.path.abspath("estoque.db")
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('''SELECT nome_fantasia FROM fornecedor''')
+    fornecedores = cursor.fetchall()
+    conn.close()
+    return [fornecedor[0] for fornecedor in fornecedores]
+
 
 def obter_nomes_categorias():
     # Função para obter os nomes das categorias do banco de dados
@@ -208,11 +214,6 @@ entry_notas.grid(row=8, column=1)
 
 # Cria uma célula vazia na coluna 1 e linha 9 para centralizar o botão Inserir
 tk.Label(root, text='').grid(row=9, column=1)
-
-# Função para inserir um novo produto no estoque
-def inserir_produto():
-    # Código para inserir um novo produto no banco de dados
-    pass
 
 # Botão para executar a operação de inserção, centralizado na parte inferior
 btn_inserir = tk.Button(root, text='Inserir', command=inserir_produto)
