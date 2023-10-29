@@ -1,6 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
 import sqlite3
+from datetime import datetime  # Importe o módulo datetime
 
 class PDVInterface:
     def __init__(self, root):
@@ -41,6 +42,10 @@ class PDVInterface:
         label_total.grid(row=4, column=0, padx=10, pady=10, sticky='w')
         self.total_label = tk.Label(root, text="R$ 0.00")
         self.total_label.grid(row=4, column=1, padx=10, pady=10, sticky='w')
+
+        #Botão finalizar a compra
+        finalizar_compra_button = tk.Button(root, text="Finalizar Compra", command=self.finalizar_compra)
+        finalizar_compra_button.grid(row=4, column=0, columnspan=2, padx=10, pady=10, sticky= 'e')
 
     def obter_nomes_produtos(self):
         # Conectar ao banco de dados
@@ -122,6 +127,40 @@ class PDVInterface:
         # Calcule o total da compra somando os valores totais dos produtos
         total_compra = sum(produto["preco"] * produto["quantidade"] for produto in self.produtos)
         self.total_label.config(text=f"R$ {total_compra:.2f}")
+
+    def finalizar_compra(self):
+        # 1. Registrar a venda no banco de dados
+        cpf_cliente = self.cliente_cpf.get()
+        forma_pagamento = self.forma_pagamento.get()
+        total_compra = float(self.total_label.cget("text").replace("R$ ", ""))  # Obtém o total da compra
+        data_hora_venda = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Obtém a data e hora atual
+
+        # Conecta ao banco de dados e insere os dados na tabela "vendas"
+        conn = sqlite3.connect("estoque.db")
+        cursor = conn.cursor()
+        cursor.execute('''INSERT INTO vendas (cpf_cliente, forma_pagamento, total_compra, data_hora_venda)
+                      VALUES (?, ?, ?, ?)''', (cpf_cliente, forma_pagamento, total_compra, data_hora_venda))
+        conn.commit()
+
+        # 2. Atualizar estoque com a quantidade vendida
+        for produto in self.produtos:
+            nome_produto = produto["nome"]
+            quantidade_vendida = produto["quantidade"]
+
+            # Conecta ao banco de dados e atualiza a quantidade do produto vendido
+            cursor.execute("UPDATE estoque SET quantidade = quantidade - ? WHERE nome = ?", (quantidade_vendida, nome_produto))
+            conn.commit()
+
+        # 3. Limpar dados de venda atual
+        self.cliente_cpf.set("")
+        self.forma_pagamento.set("")
+        self.produtos.clear()
+        self.lista_produtos.delete(*self.lista_produtos.get_children()) 
+        self.total_label.config(text="R$ 0.00")
+
+        messagebox.showinfo("Compra Finalizada", "Compra registrada om sucesso!")
+
+        conn.close()
 
 # Criar a janela principal
 root = tk.Tk()
