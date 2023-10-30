@@ -1,0 +1,5 @@
+id,nome,sobrenome,cpf,login,senha,nivel_acesso
+1,Rafael,Chilese,126.171.846-17,rafael_chilese,$2b$12$oP.zRYtMU8Ui0t9cZXx.7uJJhHAiMdY97bX4oxDez5NiHhEEIzkk2,Administrativo
+2,Elaine,Chilese,127.172.847-17,elaine_chilese,$2b$12$1QfDnwsOvZnmBuMoFOtm1uOMiFAtt4WGWGHBFAlIsAeyBI9nqM2ge,Administrativo
+3,Elaine,Chilese,127.172.847-17,elaine_chilese,$2b$12$fuB4ud5d3VxnpCjxo6cVUuJh55iY4/70XGSr6KUyHBjdtakTbdvu.,Administrativo
+4,Elaine,Chilese,126.171.846-17,elaine_chilese,$2b$12$0DaL49rCI1knaDLvzLUPxOCxC4KusTqvv5cgP0X7XjVmqmZtQ2.5u,Administrativo
