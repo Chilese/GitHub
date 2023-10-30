@@ -3,7 +3,7 @@ import subprocess
 
 # Funções para chamar os códigos correspondentes aos botões
 def abrir_cadastro_produto():
-    subprocess.run(["python3", "interface.py"], cwd="/home/chilese/Documentos/GitHub/PDV_Projeto")
+    subprocess.run(["python3", "cadastro_produto.py"], cwd="/home/chilese/Documentos/GitHub/PDV_Projeto")
 
 def abrir_cadastro_fornecedor():
     subprocess.run(["python3", "cadastro_fornecedor.py"], cwd="/home/chilese/Documentos/GitHub/PDV_Projeto")

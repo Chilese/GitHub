@@ -37,7 +37,7 @@ def buscar_produtos():
 
 # Função para abrir a janela de cadastro de produtos (interface.py)
 def abrir_interface_cadastro():
-    import interface
+    import cadastro_produto
 
 # Função para abrir a janela de edição do produto
 def editar_produto(event):
