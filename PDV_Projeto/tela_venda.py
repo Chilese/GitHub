@@ -21,7 +21,7 @@ class PDVInterface:
 
         label_pagamento = tk.Label(root, text="Forma de Pagamento:")
         label_pagamento.grid(row=1, column=0, padx=10, pady=10, sticky='w')
-        combo_pagamento = ttk.Combobox(root, textvariable=self.forma_pagamento, values=["Débito", "Crédito", "Dinheiro"])
+        combo_pagamento = ttk.Combobox(root, textvariable=self.forma_pagamento, values=["Débito", "Crédito", "Dinheiro", "Pix"])
         combo_pagamento.grid(row=1, column=1, padx=10, pady=10)
 
         label_produtos = tk.Label(root, text="Produtos:")
@@ -139,7 +139,8 @@ class PDVInterface:
         conn = sqlite3.connect("estoque.db")
         cursor = conn.cursor()
         cursor.execute('''INSERT INTO vendas (cpf_cliente, forma_pagamento, total_compra, data_hora_venda)
-                      VALUES (?, ?, ?, ?)''', (cpf_cliente, forma_pagamento, total_compra, data_hora_venda))
+                    VALUES (?, ?, ?, ?)''', (cpf_cliente, forma_pagamento, total_compra, data_hora_venda))
+        venda_id = cursor.lastrowid  # Obtém o ID da venda recém-inserida
         conn.commit()
 
         # 2. Atualizar estoque com a quantidade vendida
@@ -151,16 +152,22 @@ class PDVInterface:
             cursor.execute("UPDATE estoque SET quantidade = quantidade - ? WHERE nome = ?", (quantidade_vendida, nome_produto))
             conn.commit()
 
-        # 3. Limpar dados de venda atual
+            # 3. Inserir itens da venda na tabela "itens_venda"
+            cursor.execute('''INSERT INTO itens_venda (venda_id, produto_nome, quantidade)
+                        VALUES (?, ?, ?)''', (venda_id, nome_produto, quantidade_vendida))
+            conn.commit()
+
+        # 4. Limpar dados de venda atual
         self.cliente_cpf.set("")
         self.forma_pagamento.set("")
         self.produtos.clear()
         self.lista_produtos.delete(*self.lista_produtos.get_children()) 
         self.total_label.config(text="R$ 0.00")
 
-        messagebox.showinfo("Compra Finalizada", "Compra registrada om sucesso!")
+        messagebox.showinfo("Compra Finalizada", "Compra registrada com sucesso!")
 
         conn.close()
+
 
 # Criar a janela principal
 root = tk.Tk()
