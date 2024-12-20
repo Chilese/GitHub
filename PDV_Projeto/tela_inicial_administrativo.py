@@ -14,40 +14,42 @@ root.title('Bem-vindo ao Seu Sistema PDV')
 button_width = 150
 button_height = 150
 
-# Diretório dos ícones
-icon_dir = os.path.join(os.path.dirname(__file__), "icons")
-
 # Lista de novos scripts a serem abertos com ícones correspondentes
 scripts = [
-    {"nome": "Cadastro de Produtos", "script": "cadastro_produtos", "icone": os.path.join(icon_dir, "produtos.png")},
-    {"nome": "Gestão de Estoque", "script": "gestao_estoque", "icone": os.path.join(icon_dir, "estoque.png")},
-    {"nome": "Cadastro de Fornecedores", "script": "cadastro_fornecedores", "icone": os.path.join(icon_dir, "fornecedores.png")},
-    {"nome": "Gestão de Vendas", "script": "gestao_vendas", "icone": os.path.join(icon_dir, "vendas.png")}
+    {"nome": "Cadastro de Produto", "script": "cadastro_produto", "icone": "produto.png"},
+    {"nome": "Cadastro de Fornecedor", "script": "cadastro_fornecedor", "icone": "fornecedor.png"},
+    {"nome": "Cadastro de Categoria", "script": "cadastro_categoria", "icone": "categoria.png"},
+    {"nome": "Visualizar Estoque", "script": "tela_estoque_revisado", "icone": "estoque.png"},
+    {"nome": "Vendas", "script": "tela_venda", "icone": "vendas.png"},
+    {"nome": "Lista de Produtos", "script": "tela_lista_de_produtos", "icone": "produto.png"},
+    {"nome": "Gestão de Usuário", "script": "administrativa_gestao_usuario", "icone": "usuario.png"},
+    {"nome": "Gestão de Vendas", "script": "administrativa_gestao_vendas", "icone": "painel.png"}
 ]
 
-# Função para criar botões com ícones e textos
-def criar_botao(script):
-    frame = tk.Frame(root, padx=10, pady=10)
-    frame.pack(side=tk.LEFT, padx=10, pady=10)
+# Frames para organizar os botões
+frame_top = tk.Frame(root)
+frame_bottom = tk.Frame(root)
 
-    # Verifica se o ícone existe
-    if not os.path.exists(script["icone"]):
-        print(f"Ícone não encontrado: {script['icone']}")
-        return
+# Funções para abrir os scripts
+for i, script_info in enumerate(scripts):
+    # Carregar ícone
+    icon_path = os.path.join(os.path.dirname(__file__), f"icons/{script_info['icone']}")
+    icon = Image.open(icon_path)
 
-    img = Image.open(script["icone"])
-    img = img.resize((button_width, button_height), Image.ANTIALIAS)
-    photo = ImageTk.PhotoImage(img)
+    # Redimensionar imagem
+    icon = icon.resize((button_width - 20, button_height - 50))
 
-    botao = tk.Button(frame, image=photo, command=lambda: abrir_script(script["script"]))
-    botao.image = photo  # Manter uma referência da imagem para evitar garbage collection
-    botao.pack()
+    # Converter para o formato Tkinter
+    icon = ImageTk.PhotoImage(icon)
 
-    label = tk.Label(frame, text=script["nome"], wraplength=button_width, justify=tk.CENTER)
-    label.pack()
+    # Adicionar botão com ícone e descrição
+    btn = tk.Button(frame_top if i < 4 else frame_bottom, text=script_info["nome"], image=icon, compound="top", command=lambda s=script_info["script"]: abrir_script(s), width=button_width, height=button_height)
+    btn.image = icon  # Manter referência ao ícone para evitar que seja coletado pelo garbage collector
+    btn.pack(side=tk.LEFT if i % 2 == 0 else tk.RIGHT, padx=10)
 
-# Criar botões para cada script
-for script in scripts:
-    criar_botao(script)
+# Empacotar os frames
+frame_top.pack(pady=10)
+frame_bottom.pack(pady=10)
 
+# Inicia a execução da interface
 root.mainloop()
